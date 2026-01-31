@@ -38,7 +38,7 @@ export default function App() {
 
     try {
       // Tell FastAPI to update this signal
-      await fetch(`http://127.0.0.1:8000/api/heal/${selected.id}`, {
+      await fetch(`http://127.0.0.1:8000/api/signals/${selected.id}`, {
         method: 'POST'
       });
 

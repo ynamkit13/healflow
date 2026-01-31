@@ -6,7 +6,8 @@ app = FastAPI()
 # This part is CRUCIAL so your React app doesn't get blocked
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allows your local React dev server to connect
+    allow_origins=["http://localhost:5173"], # Ensure this matches your Vite URL
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
