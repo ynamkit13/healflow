@@ -1,0 +1,62 @@
+[
+    {
+      "id": "ERR_001",
+      "merchant": "Mumbai_Fashion_Hub",
+      "error_type": "404_API_NOT_FOUND",
+      "description": "Frontend attempting to call /v1/checkout. Endpoint deprecated in Headless V2.",
+      "tier": "Gold",
+      "status": "Thinking",
+      "timestamp": "2026-01-31T21:40:00Z",
+      "frequency": 42,
+      "metadata": {
+        "component": "Checkout Service",
+        "impact": "High",
+        "logs": "GET /v1/checkout -> 404 Not Found (Legacy Router)"
+      }
+    },
+    {
+      "id": "ERR_004",
+      "merchant": "Sneaker_Vault_India",
+      "error_type": "CORS_MISCONFIG",
+      "description": "Checkout failed. Origin 'https://sneakers.dev' not allowed on production API.",
+      "tier": "Gold",
+      "status": "Thinking",
+      "timestamp": "2026-01-31T21:45:00Z",
+      "frequency": 8,
+      "metadata": {
+        "component": "Edge Runtime",
+        "impact": "Critical",
+        "logs": "Access to fetch at 'api.saas.com' from origin blocked by CORS policy."
+      }
+    },
+    {
+      "id": "ERR_003",
+      "merchant": "Urban_Styles",
+      "error_type": "WEBHOOK_TIMEOUT",
+      "description": "Order sync failed. Merchant firewall is blocking the new platform IP range.",
+      "tier": "Gold",
+      "status": "Healed",
+      "timestamp": "2026-01-31T21:30:00Z",
+      "frequency": 15,
+      "metadata": {
+        "component": "Webhook Dispatcher",
+        "impact": "High",
+        "logs": "ETIMEDOUT 54.212.x.x:443"
+      }
+    },
+    {
+      "id": "ERR_002",
+      "merchant": "Global_Gadgets_Store",
+      "error_type": "AUTH_FAILURE",
+      "description": "Invalid API Key. Merchant has not rotated credentials after headless migration.",
+      "tier": "Standard",
+      "status": "Thinking",
+      "timestamp": "2026-01-31T21:35:00Z",
+      "frequency": 2,
+      "metadata": {
+        "component": "Auth Gateway",
+        "impact": "Medium",
+        "logs": "POST /v2/auth -> 401 Unauthorized"
+      }
+    }
+  ]
