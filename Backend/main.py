@@ -21,7 +21,7 @@ def startup_db():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # THE DROP LINE: Deletes old table so new structure (severity column) is created
+    # Keeps table fresh for testing; comment out once your demo is final
     cur.execute("DROP TABLE IF EXISTS signals;")
     
     cur.execute("""
@@ -31,7 +31,8 @@ def startup_db():
             description TEXT, 
             status TEXT DEFAULT 'Pending', 
             severity TEXT DEFAULT 'low',
-            ai_data JSONB
+            ai_data JSONB,
+            feedback TEXT DEFAULT 'none'  -- STEP 1: ADDED FOR ADAPTATION
         );
     """)
     
@@ -47,10 +48,8 @@ def startup_db():
     
     cur.executemany("INSERT INTO signals (id, merchant, description, severity) VALUES (%s,%s,%s,%s)", issues)
     conn.commit()
-    cur.close()
-    conn.close()
+    cur.close(); conn.close()
 
-# Ensure you use the active key provided by your friend
 client = genai.Client(api_key="AIzaSyA3qiACUjDoYz1IIdYJyoo0R2HQQnBcNSs")
 
 def get_mock_ai(merchant, desc):
@@ -72,8 +71,7 @@ async def get_signals():
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute("SELECT * FROM signals ORDER BY id ASC")
     res = cur.fetchall()
-    cur.close()
-    conn.close()
+    cur.close(); conn.close()
     return res
 
 @app.post("/api/signals/{signal_id}/heal")
@@ -84,33 +82,43 @@ async def heal(signal_id: str):
         cur.execute("SELECT * FROM signals WHERE id = %s", (signal_id,))
         signal = cur.fetchone()
         
-        print(f"DEBUG: Attempting Gemini call for {signal['merchant']}...")
-
         try:
             prompt = f"Analyze: {signal['description']}. Return JSON (analysis: root_cause, orda_loop: observe, reason, decide, act)."
-            # UPDATED MODEL NAME: Using the reasoning-optimized Gemini 3 Flash
             response = client.models.generate_content(
                 model="gemini-3-flash-preview", 
-                contents=prompt, 
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    safety_settings=[
-                        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-                        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-                        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-                        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-                    ]
-                )
+                contents=prompt,
+                config=types.GenerateContentConfig(response_mime_type="application/json")
             )
             ai_json = json.loads(response.text)
-            print("DEBUG: Gemini Success!") 
         except Exception as e:
             print(f"DEBUG: Gemini Failed! Error: {str(e)}") 
             ai_json = get_mock_ai(signal['merchant'], signal['description'])
         
-        cur.execute("UPDATE signals SET ai_data = %s, status = 'Healed' WHERE id = %s", (json.dumps(ai_json), signal_id))
+        cur.execute("UPDATE signals SET ai_data = %s, status = 'Awaiting_Approval' WHERE id = %s", (json.dumps(ai_json), signal_id))
         conn.commit()
         return ai_json
+    finally:
+        cur.close(); conn.close()
+
+@app.post("/api/signals/{signal_id}/accept")
+async def accept_signal(signal_id: str):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE signals SET status = 'Healed' WHERE id = %s", (signal_id,))
+        conn.commit()
+        return {"status": "Protocol Executed Successfully"}
+    finally:
+        cur.close(); conn.close()
+
+@app.post("/api/signals/{signal_id}/reject")
+async def reject_signal(signal_id: str):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("UPDATE signals SET status = 'Engineer_Assigned' WHERE id = %s", (signal_id,))
+        conn.commit()
+        return {"status": "Escalated to Engineering Team"}
     finally:
         cur.close(); conn.close()
 
@@ -125,11 +133,18 @@ async def add_signal(data: dict):
         )
         conn.commit()
         return {"status": "Signal Added Successfully"}
-    except Exception as e:
-        return {"error": str(e)}
     finally:
-        cur.close()
-        conn.close()
-
+        cur.close(); conn.close()
+@app.post("/api/signals/{signal_id}/feedback")
+async def save_feedback(signal_id: str, data: dict):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        # data['vote'] will be 'positive' or 'negative' from the frontend
+        cur.execute("UPDATE signals SET feedback = %s WHERE id = %s", (data['vote'], signal_id))
+        conn.commit()
+        return {"status": "Feedback logged for model optimization"}
+    finally:
+        cur.close(); conn.close()
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
