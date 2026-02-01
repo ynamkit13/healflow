@@ -27,21 +27,57 @@ export default function App() {
     }
   };
 
+  // Logic to separate merchants by severity
+  const criticalSignals = signals.filter(s => s.severity === 'high');
+  const recentSignals = signals.filter(s => s.severity === 'low');
+
   return (
     <div className="flex h-screen bg-black text-white font-mono text-[12px]">
-      <div className="w-72 border-r border-white/10 p-6 bg-zinc-950">
-        <div className="text-emerald-500 font-bold mb-10 italic">HEALFLOW</div>
-        <div className="space-y-4">
-          {signals.map(s => (
-            <div key={s.id} onClick={() => setSelected(s)} 
-                 className={`p-4 border border-white/5 cursor-pointer rounded ${selected?.id === s.id ? 'bg-emerald-500/10 border-emerald-500' : 'opacity-40'}`}>
-              <div className="font-bold uppercase tracking-tighter">{s.merchant}</div>
-              <div className="text-[9px] mt-1 text-zinc-500 uppercase">{s.status}</div>
-            </div>
-          ))}
+      {/* SIDEBAR */}
+      <div className="w-72 border-r border-white/10 p-6 bg-zinc-950 overflow-y-auto">
+        <div className="text-emerald-500 font-bold mb-6 italic">HEALFLOW</div>
+
+        {/* LIVE SYSTEM STATUS */}
+        <div className="mb-8 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded">
+          <div className="flex justify-between items-center text-[10px]">
+            <span className="text-emerald-500 animate-pulse font-bold">● SYSTEM_ACTIVE</span>
+            <span className="text-zinc-500">{criticalSignals.length} CRITICAL</span>
+          </div>
+        </div>
+        
+        {/* CRITICAL RADAR SECTION */}
+        <div className="mb-10">
+          <div className="text-[10px] text-zinc-600 font-black mb-4 tracking-[0.3em] uppercase">Critical_Radar</div>
+          <div className="space-y-4">
+            {criticalSignals.map(s => (
+              <div key={s.id} onClick={() => setSelected(s)} 
+                   className={`p-4 border border-white/5 cursor-pointer rounded transition-all ${selected?.id === s.id ? 'bg-emerald-500/10 border-emerald-500' : 'opacity-40 hover:opacity-100'}`}>
+                <div className="font-bold uppercase tracking-tighter text-red-400">{s.merchant}</div>
+                <div className="text-[9px] mt-1 text-zinc-500 uppercase flex justify-between">
+                  <span>{s.status}</span>
+                  <span className="text-red-600 font-bold">!!</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* RECENT SIGNALS SECTION */}
+        <div>
+          <div className="text-[10px] text-zinc-600 font-black mb-4 tracking-[0.3em] uppercase">Recent_Signals</div>
+          <div className="space-y-4">
+            {recentSignals.map(s => (
+              <div key={s.id} onClick={() => setSelected(s)} 
+                   className={`p-4 border border-white/5 cursor-pointer rounded transition-all ${selected?.id === s.id ? 'bg-emerald-500/10 border-emerald-500' : 'opacity-40 hover:opacity-100'}`}>
+                <div className="font-bold uppercase tracking-tighter">{s.merchant}</div>
+                <div className="text-[9px] mt-1 text-zinc-500 uppercase">{s.status}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* MAIN VIEWPORT */}
       <div className="flex-1 p-16 overflow-y-auto">
         {selected ? (
           <div className="max-w-3xl space-y-10">
@@ -55,6 +91,7 @@ export default function App() {
               </p>
             </div>
 
+            {/* AI REASONING ORDA LOOP */}
             {selected.ai_data?.orda_loop && (
               <div className="grid grid-cols-1 gap-2 text-[10px]">
                 <div className="p-4 border border-white/5 opacity-60 uppercase font-bold text-emerald-500/70 tracking-widest">Observe: {selected.ai_data.orda_loop.observe}</div>
