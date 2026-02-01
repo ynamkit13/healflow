@@ -1,16 +1,42 @@
-# React + Vite
+HealFlow: Autonomous Merchant Support Agent
+HealFlow is a self-healing AI orchestration layer designed to eliminate "Integration Friction" in merchant ecosystems. By leveraging frontier AI reasoning, the system identifies, diagnoses, and resolves technical anomalies—such as webhook decay and credential expiration—in real-time, before they escalate into support tickets.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🚀 Key Features
+Autonomous Diagnostics: Moves beyond static scripts to reason through complex system logs using Gemini 3 Flash.
 
-Currently, two official plugins are available:
+ORDA Reasoning Loop: Operates on an Observe-Reason-Decide-Act cycle to ensure grounded, contextual decision-making.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Self-Healing Protocols: Executes automated recovery actions like session recycling and configuration patches.
 
-## React Compiler
+Human-in-the-Loop (HITL): A secure dashboard featuring a binary feedback loop (Thumbs Up/Down) for supervised learning and safety.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Real-time Telemetry: Asynchronous processing of high-volume merchant signals via FastAPI.
 
-## Expanding the ESLint configuration
+🛠️ Technical Stack
+Intelligence: Gemini 3 Flash (via Google AI SDK)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Backend: Python, FastAPI
+
+Database: PostgreSQL (for health state persistence and audit logs)
+
+Frontend: React (Command Center Dashboard)
+
+Logic Framework: Structured JSON output for reliable tool-calling and execution.
+
+🏗️ System Architecture
+Ingestion Layer: Captures raw telemetry and error signals from merchant integrations.
+
+The Controller (FastAPI): Orchestrates data flow between the AI core and the database.
+
+Intelligence Core (Gemini 3): Performs high-speed reasoning to distinguish between transient noise and structural failures.
+
+Execution Layer: Deploys recovery protocols or flags anomalies for human intervention based on confidence scores.
+
+📈 Learning & Improvement
+HealFlow utilizes Reinforcement Learning from Human Feedback (RLHF). Every interaction on the dashboard (Thumbs Up/Down) is captured to:
+
+Refine the agent's diagnostic accuracy.
+
+Increase the automation rate for high-confidence fixes.
+
+Align AI reasoning with institutional engineering standards.
