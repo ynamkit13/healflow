@@ -101,9 +101,18 @@ export default function App() {
             </div>
 
             <div className="bg-zinc-900/50 p-8 border border-white/10 rounded backdrop-blur-sm">
-              <h3 className="text-emerald-500/50 text-[10px] uppercase mb-4 font-bold tracking-widest">Diagnostic_Report</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-emerald-500/50 text-[10px] uppercase font-bold tracking-widest">Diagnostic_Report</h3>
+                {/* RAG MEMORY BADGE */}
+                {selected.ai_data?.using_memory && (
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
+                    <span className="text-[9px] text-emerald-500 font-bold uppercase tracking-widest">Memory_Retrieved</span>
+                  </div>
+                )}
+              </div>
               <p className="text-[13px] leading-relaxed">
-                {selected.ai_data?.analysis?.root_cause ?? (loading ? "AI_ANALYZING_INFRASTRUCTURE..." : "Awaiting Protocol Initiation...")}
+                {selected.ai_data?.analysis?.root_cause ?? (loading ? "CONSULTING_HISTORICAL_SOLUTIONS..." : "Awaiting Protocol Initiation...")}
               </p>
             </div>
 
