@@ -7,13 +7,15 @@ from psycopg2.extras import RealDictCursor
 
 warnings.filterwarnings("ignore")
 app = FastAPI()
+
+# Enable CORS for frontend-backend communication
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 def get_db_connection():
     return psycopg2.connect(host="localhost", database="healflow", user="postgres", password="postgres")
 
 # New token applied
-client = genai.Client(api_key="AIzaSyBfzMO3nlpvd2wUyfOXlmPj718Q5c4mQpQ")
+client = genai.Client(api_key="AIzaSyAXCOUdXggojJDpflDB3WexEyZf6hxC1pk")
 
 @app.on_event("startup")
 def startup_db():
@@ -50,7 +52,7 @@ async def heal(signal_id: str):
         cur.execute("SELECT * FROM signals WHERE id = %s", (signal_id,))
         signal = cur.fetchone()
 
-        # RAG Logic: Finding the 'Ground Truth'
+        # RAG Logic: Finding past successful resolutions
         cur.execute("SELECT description, ai_data FROM signals WHERE status = 'Healed' AND feedback = 'positive' LIMIT 1")
         past = cur.fetchone()
         
